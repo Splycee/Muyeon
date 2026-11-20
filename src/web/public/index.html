@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel del bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12141c;--s1:#1a1e2c;--s2:#232840;--line:#2f3552;--tx:#e9eaf3;--mu:#8d93b3;--ac:#7c8cff;--ok:#62d6a5;--bad:#ff6b7a;--r:12px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 Sora,system-ui,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+a{color:var(--ac)}
+.login{display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}
+.login h1{font-size:34px;margin:0 0 8px;letter-spacing:-.02em}
+.login p{color:var(--mu);margin:0 0 24px}
+.btn{background:var(--ac);color:#0d1020;border:0;border-radius:10px;padding:10px 18px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:var(--s2);color:var(--tx)}
+.btn.bad{background:var(--bad)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.app{display:grid;grid-template-columns:76px 1fr;min-height:100vh}
+.rail{background:#0e1017;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto}
+.gi{width:48px;height:48px;border-radius:50%;background:var(--s2);border:2px solid transparent;display:grid;place-items:center;font-weight:700;cursor:pointer;overflow:hidden;transition:border-radius .15s}
+.gi img{width:100%;height:100%;object-fit:cover}
+.gi:hover,.gi.on{border-radius:16px}
+.gi.on{border-color:var(--ac)}
+.gi.off{opacity:.45}
+.main{padding:24px 32px;max-width:1200px;width:100%}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.top h2{margin:0;font-size:22px;letter-spacing:-.01em}
+.me{display:flex;align-items:center;gap:10px;color:var(--mu)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap}
+.tab{background:none;border:0;padding:10px 14px;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500}
+.tab.on{color:var(--tx);border-color:var(--ac)}
+.panel{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px}
+.panel h3{margin:0 0 4px;font-size:15px}
+.hint{color:var(--mu);font-size:12.5px;margin:0 0 14px}
+label{display:block;font-size:12.5px;color:var(--mu);margin:12px 0 4px}
+input[type=text],input[type=url],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+textarea{resize:vertical;min-height:80px}
+input[type=color]{width:46px;height:36px;padding:2px;background:var(--bg);border:1px solid var(--line);border-radius:9px;cursor:pointer}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.chk{display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--line);padding:9px 12px;border-radius:9px;cursor:pointer;color:var(--tx);margin:0;font-size:13px}
+.chk input{accent-color:var(--ac);width:16px;height:16px}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{background:none;border:0;padding:7px 16px;border-radius:8px;cursor:pointer;color:var(--mu);font-weight:600}
+.seg button.on{background:var(--ac);color:#0d1020}
+.row{display:grid;grid-template-columns:1fr 2fr auto auto;gap:8px;align-items:center;margin-bottom:8px}
+.row.b{grid-template-columns:1fr 2fr auto}
+.x{background:none;border:0;color:var(--bad);cursor:pointer;font-size:18px}
+.builder{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+.sticky{position:sticky;top:16px}
+/* vista previa estilo Discord */
+.pv{background:#313338;border-radius:var(--r);padding:16px;color:#dbdee1;font-family:system-ui,sans-serif}
+.pv .m{display:flex;gap:12px}
+.pv .av{width:40px;height:40px;border-radius:50%;background:var(--ac);flex:none;object-fit:cover;display:grid;place-items:center;color:#0d1020;font-weight:700}
+.pv .nm{font-weight:600;color:#fff}.pv .app-tag{background:#5865f2;color:#fff;font-size:10px;border-radius:4px;padding:1px 5px;margin-left:6px}
+.pv .body{min-width:0;flex:1}
+.pv .emb{border-left:4px solid var(--ac);background:#2b2d31;border-radius:4px;padding:10px 14px;margin-top:6px;max-width:440px;display:grid;gap:6px}
+.pv .emb img.big{max-width:100%;border-radius:4px}
+.pv .th{float:right;width:70px;height:70px;border-radius:4px;object-fit:cover;margin-left:10px}
+.pv .et{font-weight:700;color:#fff}.pv .ft{font-size:12px;color:#949ba4}
+.pv .flds{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 10px}.pv .flds .full{grid-column:1/-1}
+.pv .fn{font-weight:700;font-size:13px;color:#fff}
+.pv .btns{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.pv .btns span{background:#4e5058;padding:5px 12px;border-radius:4px;font-size:13px}
+.pv .cont{border-left:4px solid var(--ac);background:#2b2d31;border-radius:6px;padding:12px 14px;margin-top:6px;max-width:480px;display:grid;gap:8px}
+.pv .gal{display:grid;gap:3px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.pv .gal img{width:100%;border-radius:6px;max-height:220px;object-fit:cover}
+.pv hr{border:0;border-top:1px solid #3f4147;margin:2px 0;width:100%}
+.pv .sm{font-size:12px;color:#949ba4}
+.pv .sec{display:flex;gap:12px;justify-content:space-between}
+.pv .sec img{width:80px;height:80px;border-radius:6px;object-fit:cover}
+.pv pre{margin:0;white-space:pre-wrap;font:inherit}
+table{width:100%;border-collapse:collapse}
+td,th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mu);font-weight:500;font-size:12.5px}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--s2);border:1px solid var(--line);padding:12px 18px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;max-width:360px}
+.toast.show{opacity:1;transform:none}.toast.err{border-color:var(--bad)}.toast.good{border-color:var(--ok)}
+.empty{color:var(--mu);text-align:center;padding:60px 20px}
+@media(max-width:900px){.builder{grid-template-columns:1fr}.sticky{position:static}.app{grid-template-columns:60px 1fr}.main{padding:16px}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const S = { me: null, cats: {}, guilds: [], cur: null, tab: 'logs', mode: 'normal', clientId: '' };
+
+async function api(p, o = {}) {
+  const r = await fetch('/api' + p, { method: o.method || 'GET', headers: { 'Content-Type': 'application/json' }, body: o.body ? JSON.stringify(o.body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'Error ' + r.status);
+  return j;
+}
+function toast(m, t = 'good') { const e = $('#toast'); e.textContent = m; e.className = 'toast show ' + t; clearTimeout(toast.t); toast.t = setTimeout(() => e.className = 'toast', 3500); }
+const guard = fn => async (...a) => { try { await fn(...a); } catch (e) { toast(e.message, 'err'); } };
+
+async function init() {
+  try { const me = await api('/me'); S.me = me.user; S.cats = me.categories; S.clientId = me.clientId; }
+  catch { return renderLogin(); }
+  S.guilds = await api('/guilds');
+  renderApp();
+  const first = S.guilds.find(g => g.botIn); if (first) selectGuild(first.id);
+}
+
+function renderLogin() {
+  $('#root').innerHTML = `<div class="login"><div><h1>Panel del bot</h1><p>Entra con Discord para gestionar logs, embeds y moderación de tus servidores.</p><a class="btn" href="/auth/login">Iniciar sesión con Discord</a></div></div>`;
+}
+
+function renderApp() {
+  const av = S.me.avatar ? `https://cdn.discordapp.com/avatars/${S.me.id}/${S.me.avatar}.png?size=64` : '';
+  $('#root').innerHTML = `<div class="app"><nav class="rail" id="rail">${S.guilds.map(g => `
+    <div class="gi ${g.botIn ? '' : 'off'}" data-id="${g.id}" title="${esc(g.name)}${g.botIn ? '' : ' (invitar bot)'}">${g.icon ? `<img src="${g.icon}" alt="">` : esc(g.name[0])}</div>`).join('')}</nav>
+    <main class="main"><div class="top"><h2 id="title">Elige un servidor</h2><div class="me">${av ? `<img src="${av}" width="28" height="28" style="border-radius:50%" alt="">` : ''}${esc(S.me.username)} <a href="/auth/logout">Salir</a></div></div><div id="view"><div class="empty">Selecciona un servidor en la barra izquierda.</div></div></main></div>`;
+  $('#rail').onclick = e => {
+    const el = e.target.closest('.gi'); if (!el) return;
+    const g = S.guilds.find(x => x.id === el.dataset.id);
+    if (!g.botIn) return window.open(`https://discord.com/oauth2/authorize?client_id=${S.clientId}&scope=bot%20applications.commands&permissions=8&guild_id=${g.id}`, '_blank');
+    selectGuild(g.id);
+  };
+}
+
+const selectGuild = guard(async id => {
+  S.cur = await api('/guilds/' + id);
+  document.querySelectorAll('.gi').forEach(e => e.classList.toggle('on', e.dataset.id === id));
+  $('#title').textContent = S.cur.name;
+  renderTabs();
+});
+
+function renderTabs() {
+  const tabs = [['logs', 'Registros'], ['embeds', 'Mensajes y embeds'], ['webhook', 'Perfil del webhook'], ['mod', 'Moderación']];
+  $('#view').innerHTML = `<div class="tabs">${tabs.map(([k, n]) => `<button class="tab ${S.tab === k ? 'on' : ''}" data-t="${k}">${n}</button>`).join('')}</div><div id="tab"></div>`;
+  $('#view .tabs').onclick = e => { const t = e.target.dataset.t; if (t) { S.tab = t; renderTabs(); } };
+  ({ logs: tabLogs, embeds: tabEmbeds, webhook: tabWebhook, mod: tabMod })[S.tab]();
+}
+
+const chanOpts = (sel) => { const by = {}; S.cur.channels.forEach(c => (by[c.category] ||= []).push(c));
+  return Object.entries(by).map(([cat, cs]) => `<optgroup label="${esc(cat || 'Sin categoría')}">${cs.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>#${esc(c.name)}</option>`).join('')}</optgroup>`).join(''); };
+
+/* ---------- Registros ---------- */
+function tabLogs() {
+  const c = S.cur.config;
+  $('#tab').innerHTML = `<div class="panel"><h3>Canal de registros</h3><p class="hint">Aquí llegará todo lo que pase en el servidor. Elige un canal privado para el staff.</p>
+    <select id="logch"><option value="">— Desactivado —</option>${chanOpts(c.logChannelId)}</select></div>
+    <div class="panel"><h3>Qué se registra</h3><p class="hint">Desactiva las categorías que no necesites.</p>
+    <div class="cats">${Object.entries(S.cats).map(([k, d]) => `<label class="chk"><input type="checkbox" data-k="${k}" ${c.logCategories[k] === false ? '' : 'checked'}>${esc(d)}</label>`).join('')}</div></div>
+    <button class="btn" id="savelogs">Guardar registros</button>`;
+  $('#savelogs').onclick = guard(async () => {
+    const lc = {}; document.querySelectorAll('[data-k]').forEach(i => lc[i.dataset.k] = i.checked);
+    await api(`/guilds/${S.cur.id}/config`, { method: 'PUT', body: { logChannelId: $('#logch').value, logCategories: lc } });
+    S.cur.config.logChannelId = $('#logch').value; S.cur.config.logCategories = lc; toast('Registros guardados');
+  });
+}
+
+/* ---------- Perfil webhook ---------- */
+function tabWebhook() {
+  const p = S.cur.config.webhookProfile;
+  $('#tab').innerHTML = `<div class="panel"><h3>Nombre e icono por defecto</h3><p class="hint">Los mensajes del panel se envían por un webhook que el bot crea solo en cada canal. Aquí defines cómo se ven. Podrás cambiarlo en cada envío.</p>
+    <div class="g2"><div><label>Nombre</label><input type="text" id="wn" maxlength="80" value="${esc(p.name)}" placeholder="Nombre del bot"></div>
+    <div><label>URL del icono</label><input type="url" id="wa" value="${esc(p.avatar)}" placeholder="https://…/icono.png"></div></div>
+    <div class="pv" style="margin-top:16px"><div class="m"><div id="wpa"></div><div class="body"><div class="nm"><span id="wpn"></span><span class="app-tag">APP</span></div><div>Así se verán tus mensajes.</div></div></div></div></div>
+    <button class="btn" id="savewh">Guardar perfil</button>`;
+  const upd = () => { $('#wpn').textContent = $('#wn').value || 'Panel'; const a = $('#wa').value; $('#wpa').outerHTML = a ? `<img id="wpa" class="av" src="${esc(a)}" alt="">` : `<div id="wpa" class="av">${esc(($('#wn').value || 'P')[0])}</div>`; };
+  $('#wn').oninput = $('#wa').oninput = upd; upd();
+  $('#savewh').onclick = guard(async () => {
+    const wp = { name: $('#wn').value.trim(), avatar: $('#wa').value.trim() };
+    await api(`/guilds/${S.cur.id}/config`, { method: 'PUT', body: { webhookProfile: wp } });
+    S.cur.config.webhookProfile = wp; toast('Perfil guardado');
+  });
+}
+
+/* ---------- Embeds ---------- */
+function tabEmbeds() {
+  const p = S.cur.config.webhookProfile, v2 = S.mode === 'v2';
+  $('#tab').innerHTML = `<div class="builder"><form id="ef" onsubmit="return false">
+    <div class="panel"><div class="seg" id="seg"><button type="button" data-m="normal" class="${v2 ? '' : 'on'}">Embed normal</button><button type="button" data-m="v2" class="${v2 ? 'on' : ''}">Components V2</button></div>
+      <p class="hint" style="margin-top:10px">${v2 ? 'V2: contenedor con texto, galería, separadores y botones. No admite campos de embed ni texto fuera del contenedor.' : 'Clásico: título, campos, autor, pie y marca de tiempo, con texto encima.'}</p>
+      <label>Canal</label><select id="f-ch">${chanOpts('')}</select>
+      <div class="g2"><div><label>Nombre del webhook</label><input type="text" id="f-user" maxlength="80" placeholder="${esc(p.name || 'Por defecto')}"></div>
+      <div><label>Icono (URL)</label><input type="url" id="f-av" placeholder="${esc(p.avatar || 'Por defecto')}"></div></div></div>
+    <div class="panel"><h3>Contenido</h3>
+      ${v2 ? '' : '<label>Texto fuera del embed</label><textarea id="f-content" rows="2" maxlength="2000"></textarea>'}
+      <label>Autor ${v2 ? '(texto pequeño arriba)' : ''}</label><div class="g2"><input type="text" id="f-an" placeholder="Nombre"><input type="url" id="f-ai" placeholder="Icono (URL)" ${v2 ? 'disabled' : ''}></div>
+      <label>Título</label><div class="g2" style="grid-template-columns:1fr 1fr 58px"><input type="text" id="f-t" maxlength="256"><input type="url" id="f-u" placeholder="Enlace del título"><input type="color" id="f-c" value="#7c8cff"></div>
+      <label>Descripción (admite Markdown)</label><textarea id="f-d" rows="5" maxlength="4000"></textarea></div>
+    <div class="panel"><h3>${v2 ? 'Imágenes (hasta 10)' : 'Imagen'}</h3>
+      <label>${v2 ? 'Una URL por línea' : 'URL de la imagen'}</label><textarea id="f-img" rows="${v2 ? 3 : 1}" placeholder="https://…"></textarea>
+      <label>Posición de la imagen</label><select id="f-pos"><option value="bottom">Abajo</option><option value="top">Arriba</option><option value="side">Al lado (miniatura)</option></select>
+      ${v2 ? '<label class="chk" style="margin-top:12px"><input type="checkbox" id="f-spo"> Marcar imágenes como spoiler</label>' : ''}</div>
+    <div class="panel"><h3>${v2 ? 'Bloques de texto' : 'Campos'}</h3><p class="hint">${v2 ? 'Cada bloque es título en negrita + texto.' : 'Los marcados “en línea” se muestran en columnas.'}</p>
+      <div id="fields"></div><button type="button" class="btn ghost sm" id="addf">+ Añadir</button>
+      ${v2 ? '<label class="chk" style="margin-top:12px"><input type="checkbox" id="f-div"> Separador entre bloques</label>' : ''}</div>
+    <div class="panel"><h3>Botones con enlace</h3><div id="btns"></div><button type="button" class="btn ghost sm" id="addb">+ Botón</button></div>
+    <div class="panel"><h3>Pie</h3><div class="g2"><input type="text" id="f-ft" maxlength="200" placeholder="Texto del pie"><input type="url" id="f-fi" placeholder="Icono del pie (URL)" ${v2 ? 'disabled' : ''}></div>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="f-ts"> Mostrar fecha y hora</label>
+      <label class="chk" style="margin-top:8px"><input type="checkbox" id="f-men"> Permitir menciones de usuarios y roles</label></div>
+    <button type="button" class="btn" id="send">Enviar mensaje</button></form>
+    <div class="sticky"><div class="panel"><h3>Vista previa</h3><p class="hint">Aproximada. Discord puede mostrarlo ligeramente distinto.</p><div class="pv" id="pv"></div></div></div></div>`;
+
+  $('#seg').onclick = e => { const m = e.target.dataset.m; if (m && m !== S.mode) { S.mode = m; tabEmbeds(); } };
+  $('#addf').onclick = () => { addField(); preview(); };
+  $('#addb').onclick = () => { addBtn(); preview(); };
+  $('#ef').addEventListener('input', preview);
+  $('#send').onclick = guard(async () => {
+    const b = collect(); $('#send').disabled = true;
+    try { await api(`/guilds/${S.cur.id}/send`, { method: 'POST', body: b }); toast('Mensaje enviado ✔'); } finally { $('#send').disabled = false; }
+  });
+  addField(); preview();
+}
+function addField() {
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<input class="a" type="text" placeholder="Título" maxlength="256"><input class="b" type="text" placeholder="Valor" maxlength="1024">${S.mode === 'v2' ? '<span></span>' : '<label class="chk" style="margin:0;padding:6px 8px"><input class="c" type="checkbox">en línea</label>'}<button type="button" class="x" title="Quitar">×</button>`;
+  r.querySelector('.x').onclick = () => { r.remove(); preview(); }; $('#fields').append(r);
+}
+function addBtn() {
+  const r = document.createElement('div'); r.className = 'row b';
+  r.innerHTML = `<input class="a" type="text" placeholder="Texto" maxlength="80"><input class="b" type="url" placeholder="https://…"><button type="button" class="x" title="Quitar">×</button>`;
+  r.querySelector('.x').onclick = () => { r.remove(); preview(); }; $('#btns').append(r);
+}
+const val = id => ($('#' + id)?.value ?? '').trim(), chk = id => !!$('#' + id)?.checked;
+function collect() {
+  return {
+    mode: S.mode, channelId: val('f-ch'), username: val('f-user'), avatarUrl: val('f-av'), content: val('f-content'),
+    authorName: val('f-an'), authorIcon: val('f-ai'), title: val('f-t'), url: val('f-u'), color: val('f-c'), description: $('#f-d').value,
+    images: val('f-img').split(/\s+/).filter(Boolean), imagePosition: val('f-pos'), spoiler: chk('f-spo'), divider: chk('f-div'),
+    fields: [...document.querySelectorAll('#fields .row')].map(r => ({ name: r.querySelector('.a').value, value: r.querySelector('.b').value, inline: !!r.querySelector('.c')?.checked })).filter(f => f.name && f.value),
+    buttons: [...document.querySelectorAll('#btns .row')].map(r => ({ label: r.querySelector('.a').value, url: r.querySelector('.b').value })).filter(b => b.label && b.url),
+    footerText: val('f-ft'), footerIcon: val('f-fi'), timestamp: chk('f-ts'), allowMentions: chk('f-men'),
+  };
+}
+const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^## (.+)$/gm, '<b style="font-size:16px">$1</b>').replace(/^-# (.+)$/gm, '<span class="sm">$1</span>').replace(/\n/g, '<br>');
+function preview() {
+  const b = collect(), p = S.cur.config.webhookProfile, name = b.username || p.name || 'Panel', av = b.avatarUrl || p.avatar;
+  const imgs = b.images.slice(0, b.mode === 'v2' ? 10 : 1), pos = b.imagePosition, col = b.color;
+  const btns = b.buttons.length ? `<div class="btns">${b.buttons.map(x => `<span>${esc(x.label)} ↗</span>`).join('')}</div>` : '';
+  let inner = '';
+  if (b.mode === 'v2') {
+    const gal = imgs.length ? `<div class="gal">${imgs.map(u => `<img src="${esc(u)}" alt="" onerror="this.style.display='none'">`).join('')}</div>` : '';
+    const text = [b.authorName ? `-# ${b.authorName}` : '', b.title ? `## ${b.title}` : '', b.description].filter(Boolean).join('\n');
+    let h = '';
+    if (imgs.length && pos === 'top') h += gal;
+    if (imgs.length && pos === 'side' && text) h += `<div class="sec"><div>${md(text)}</div><img src="${esc(imgs[0])}" alt=""></div>`; else if (text) h += `<div>${md(text)}</div>`;
+    b.fields.forEach(f => h += (b.divider ? '<hr>' : '') + `<div><b>${esc(f.name)}</b><br>${md(f.value)}</div>`);
+    if (imgs.length && (pos === 'bottom' || (pos === 'side' && !text))) h += gal;
+    h += btns;
+    const foot = [b.footerText, b.timestamp ? new Date().toLocaleString() : ''].filter(Boolean).join(' • ');
+    if (foot) h += `<hr><div class="sm">${esc(foot)}</div>`;
+    inner = h ? `<div class="cont" style="border-color:${col}">${h}</div>` : '<span class="sm">Vacío…</span>';
+  } else {
+    const top = imgs.length && pos === 'top' ? `<div class="emb" style="border-color:${col}"><img class="big" src="${esc(imgs[0])}" alt=""></div>` : '';
+    let e = '';
+    if (b.authorName) e += `<div class="ft" style="color:#fff">${esc(b.authorName)}</div>`;
+    let t = '';
+    if (b.title) t += `<div class="et">${esc(b.title)}</div>`;
+    if (b.description) t += `<div>${md(b.description)}</div>`;
+    e += imgs.length && pos === 'side' ? `<div>${`<img class="th" src="${esc(imgs[0])}" alt="">`}${t}</div>` : t;
+    if (b.fields.length) e += `<div class="flds">${b.fields.map(f => `<div class="${f.inline ? '' : 'full'}"><div class="fn">${esc(f.name)}</div>${md(f.value)}</div>`).join('')}</div>`;
+    if (imgs.length && pos === 'bottom') e += `<img class="big" src="${esc(imgs[0])}" alt="">`;
+    const foot = [b.footerText, b.timestamp ? new Date().toLocaleString() : ''].filter(Boolean).join(' • ');
+    if (foot) e += `<div class="ft">${esc(foot)}</div>`;
+    inner = (b.content ? `<div>${md(b.content)}</div>` : '') + top + (e ? `<div class="emb" style="border-color:${col}">${e}</div>` : '') + btns;
+  }
+  $('#pv').innerHTML = `<div class="m">${av ? `<img class="av" src="${esc(av)}" alt="" onerror="this.outerHTML='<div class=av>${esc(name[0])}</div>'">` : `<div class="av">${esc(name[0])}</div>`}<div class="body"><div class="nm">${esc(name)}<span class="app-tag">APP</span></div>${inner || '<span class="sm">Vacío…</span>'}</div></div>`;
+}
+
+/* ---------- Moderación ---------- */
+const tabMod = guard(async () => {
+  $('#tab').innerHTML = `<div class="panel"><h3>Advertencias</h3><p class="hint">Se crean con /warn en Discord.</p><div id="warns">Cargando…</div></div><div class="panel"><h3>Usuarios baneados</h3><div id="bans">Cargando…</div></div>`;
+  const [w, b] = await Promise.all([api(`/guilds/${S.cur.id}/warns`), api(`/guilds/${S.cur.id}/bans`).catch(() => null)]);
+  $('#warns').innerHTML = w.length ? `<table><tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th><th></th></tr>${w.map(x => `<tr><td>${esc(x.userTag)}<br><span class="hint">${x.userId}</span></td><td>${esc(x.reason)}</td><td>${esc(x.modTag)}</td><td>${new Date(x.date).toLocaleDateString()}</td><td><button class="btn bad sm" data-w="${x._id}">Borrar</button></td></tr>`).join('')}</table>` : '<div class="empty" style="padding:20px">Sin advertencias.</div>';
+  $('#bans').innerHTML = b === null ? '<div class="hint">El bot no tiene permiso para ver los bans.</div>' : b.length ? `<table><tr><th>Usuario</th><th>Razón</th><th></th></tr>${b.map(x => `<tr><td>${esc(x.name)}<br><span class="hint">${x.id}</span></td><td>${esc(x.reason || '—')}</td><td><button class="btn ghost sm" data-b="${x.id}">Desbanear</button></td></tr>`).join('')}</table>` : '<div class="empty" style="padding:20px">Nadie baneado.</div>';
+  $('#tab').onclick = guard(async e => {
+    const w = e.target.dataset.w, b = e.target.dataset.b;
+    if (w) { await api(`/guilds/${S.cur.id}/warns/${w}`, { method: 'DELETE' }); toast('Advertencia borrada'); tabMod(); }
+    if (b && confirm('¿Desbanear a este usuario?')) { await api(`/guilds/${S.cur.id}/bans/${b}`, { method: 'DELETE' }); toast('Usuario desbaneado'); tabMod(); }
+  });
+});
+
+init();
+</script>
+</body>
+</html>
